@@ -1,0 +1,2 @@
+-- take an image and convert it into a c++ array assets file.
+-- PIXEL ORDER: Left-To-Right, Top Row to Bottom Row.
