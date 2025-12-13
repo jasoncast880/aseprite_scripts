@@ -24,6 +24,7 @@ d:number{ id="tile_len", label="Tile Size", text="16", focus=true }
 
  --backend
 
+ --[[
 function convertSprite(data, filter_clr)
 	-- run through the tiles and turn alpha colors into filter color;
 	-- return a array
@@ -35,6 +36,7 @@ function convertSprite(data, filter_clr)
 	
 	return tuple_thing
 end
+]]--
 
 --assume one frame, one spritemap per 'file'
 local data = d.data
