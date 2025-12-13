@@ -51,6 +51,6 @@ if(data.confirm_btn) then
 	local tiles_w = img.width / tile_len
 	local tiles_h = img.height / tile_len
 
-	app.alert( tile_len + "''" + tiles_w + "''" + tiles_h )
+	app.alert( tile_len .. tiles_w .. tiles_h )
 
 end
