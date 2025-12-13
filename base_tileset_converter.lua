@@ -43,19 +43,25 @@ function convertSprite(data, filter_clr)
 end
 ]]--
 
---assume one frame, one spritemap per 'file'
+--assume you have a sprite, it will have one pure tileset layer, and multiple tilemap 'configuration' layers, each perhaps will have multiple frames.
+--assume layer 1 is the layer with the tileset, other layers are pure configuration.
+
 local data = d.data
 if(data.confirm_btn) then
-
-	local s = app.sprite
-	local img = Image(s.spec)
-
 	local tile_len = data.tile_len
 	local filter_clr = data.filter_clr
 
+	local s = app.sprite
+
+	local image = Image(s.spec)
 	local tiles_w = img.width / tile_len
 	local tiles_h = img.height / tile_len
-
 	app.alert( tile_len .. " | " ..  tiles_w .. " | " .. tiles_h )
+
+	for i=1,#s.cels do 
+		local cel_bytes = s.cels[i].image:pixels()
+		
+	end 
+
 
 end

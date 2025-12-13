@@ -1,10 +1,14 @@
-local spr = app.activeSprite
-if not spr then return app.alert("No active sprite") end
+local layer = app.activeLayer
+if layer.isTilemap then
+    local w, h = layer.width, layer.height
+    local data = layer.data -- 1D array of tileset indices
 
-local img = spr.cels[1].image  -- or get the cel for the layer/frame you want
+    for y = 0, h-1 do
+        for x = 0, w-1 do
+            local idx = x + y * w + 1 -- Lua is 1-based
+            local tileIndex = data[idx]
+            print("Tile at", x, y, "=", tileIndex)
+        end
+    end
+end
 
-local tile_size = 16  -- tile width/height
-local tiles_w = math.floor(img.width / tile_size)
-local tiles_h = math.floor(img.height / tile_size)
-
-jj
