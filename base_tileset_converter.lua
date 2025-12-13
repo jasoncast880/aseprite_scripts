@@ -17,14 +17,32 @@ d:number{ id="tile_len", label="Tile Size", text="16", focus=true }
 			text="0x6767"
 		}
 	end}
-	:button{ id="confirm_btn", text="OKBUTT" }
+	:button{ id="confirm_btn", text="CONFIRM" }
  :show()
- 
 
---backend 
 
+
+ --backend
+
+function convertSprite(data, filter_clr)
+	-- run through the tiles and turn alpha colors into filter color;
+	-- return a array
+	local tuple_thing
+
+	for i=1, data.poop do
+		aiwjoaijdoaiwjdoiawjd
+	end
+	
+	return tuple_thing
+end
+
+--assume one frame, one spritemap per 'file'
 local data = d.data
 if(data.confirm_btn) then
+
+	local s = app.sprite
+	local img = Image(s.spec)
+
 	local tile_len = data.tile_len
 	local filter_clr = data.filter_clr
 
@@ -32,4 +50,5 @@ if(data.confirm_btn) then
 	local tiles_h = img.height / tile_len
 
 	app.alert( tile_len + "''" + tiles_w + "''" + tiles_h )
+
 end
