@@ -9,14 +9,19 @@
 -- get the tileset handle
 local d = Dialog("Convert to .cpp Asset File")
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true }
-	:check{ id="chk_sprite", label="Sprite Mode", selected=false, 
+	:check{ id="check_sprite", label="Sprite Mode", selected=false, 
 	onclick=function()
-		d:entry{
+		d:modify{
 			id="filter_clr",
-			label="Filter Colour (565)",
-			text="0x6767"
+			visible=d.data.check_sprite,
 		}
 	end}
+	:entry{
+				id="filter_clr",
+				label="Filter Colour (565)",
+				text="0x6767",
+				visible=false
+			}
 	:button{ id="confirm_btn", text="CONFIRM" }
  :show()
 
@@ -51,6 +56,6 @@ if(data.confirm_btn) then
 	local tiles_w = img.width / tile_len
 	local tiles_h = img.height / tile_len
 
-	app.alert( tile_len .. tiles_w .. tiles_h )
+	app.alert( tile_len .. " | " ..  tiles_w .. " | " .. tiles_h )
 
 end
