@@ -13,6 +13,6 @@ if layer.isTilemap then
 end
 
 local s = app.cel.image.bytes
-print(s)
+print(string.sub(s,1,16*3))
 
 
