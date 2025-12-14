@@ -1,6 +1,6 @@
 local layer = app.activeLayer
 if layer.isTilemap then
-    local w, h = layer.width, layer.height
+    local w, h = 3, 2
     local data = layer.data -- 1D array of tileset indices
 
     for y = 0, h-1 do
