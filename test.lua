@@ -12,3 +12,7 @@ if layer.isTilemap then
     end
 end
 
+local s = app.cel.image.bytes
+print(s)
+
+
