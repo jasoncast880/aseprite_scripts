@@ -1,7 +1,6 @@
 --all frames on the layer, each frame gets its own handle
 --ASSUME: all frames have same tile dims: ie frame 1 and frame 5 both are 3x5 tiles
 
-
 --form/fe construct
 local d = Dialog("Convert Tilemap to Asset File") --SEPERATE FILE for tileset layer
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
@@ -102,8 +101,7 @@ function AppendHeaderTileset(file, table, filter_color)
 		for j=0,16 do
 			if (table[i*16+j] == {ALPHA_COLOR}) then -- TODO: establish how the pixels are stored, and write method to conver them to rgb 565
 				file:write(filter_color .. ",")
-			else
-			file:write(table[i*16+j] .. ",")
+			else file:write(table[i*16+j] .. ",") end
 		end
 		file:write("\n")
 	end
