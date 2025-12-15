@@ -71,7 +71,7 @@ if(data.confirm_button) then
 	local filter_color = data.filter_color
 	local filename = data.filename
 
-	local file = GetFileHandle() --will output in the working dir; aseprite/scripts (machine dependent)
+	local file = GetFileHandle(filename) --will output in the working dir; aseprite/scripts (machine dependent)
 
 	--assertion step end TODO : assert filepath validity, tileset existence.
 	local sprite_img = Image(sprite.spec)
@@ -94,7 +94,7 @@ if(data.confirm_button) then
 			local pc = app.pixelColor
 			local pixValue = it() --manipulat this value to become the rgb 565 pixel 
 		
-			if(pc.rgbaA(pixValue)~=(nil or 0)) then
+			if(pc.rgbaA(pixValue)==(nil or 0)) then
 				table.insert(tileset_pixels, filter_color)
 			else
 				local r = pc.rgbaR(pixValue)
@@ -102,15 +102,12 @@ if(data.confirm_button) then
 				local b = pc.rgbaB(pixValue)
 				
 				--bit shift and concat
-				g = g>>2
-				local by1 = r & 0b11111000
-				local by2 = b>>3 & 0xF
-				by1 = by1 | (g>>3)
-				by2 = by2 | (g<<2)
-				
-				local byte_565 = (by1 << 8) | by2
+				local r5 = r>>3
+				local g6 = g>>2 
+				local b5 = b>>3
+				local byte_565 = (r5<<11) | (g6<<5) | b5
 
-				table.insert(tileset_pixes, ("0x"..byte_565))
+				table.insert(tileset_pixels, string.format( "0x%04X", byte_565))
 			end
 		end
 	end
