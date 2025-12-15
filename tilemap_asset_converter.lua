@@ -1,6 +1,10 @@
 --all frames on the layer, each frame gets its own handle
 --ASSUME: all frames have same tile dims: ie frame 1 and frame 5 both are 3x5 tiles
 
+local sprite = app.sprite
+local frame = app.frame
+local layer = app.layer
+
 --form/fe construct
 local d = Dialog("Convert Tilemap to Asset File") --SEPERATE FILE for tileset layer
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
@@ -12,27 +16,22 @@ d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 			visible=d.data.check_sprite
 		}
 	end   }
-	:entry{ id="output_filepath",label="Filepath", text="C://Downloads" }
+	:entry{ id="filename",label="filename", text=sprite.filename }
 	:button{ id="confirm_button", text="CONFIRM" }
 :show()
 
 --globs and assertions
 local data = d.data
 
-local sprite = app.sprite
-local frame = app.frame
-local layer = app.layer
-
-assert((frame.frameNumber == 1 and layer.stackIndex == 1), "GO TO THE FIRST FRAME, FIRST LAYER TO RUN THIS SCRIPT")
+assert((frame.frameNumber == 1 ), "GO TO THE FIRST FRAME TO RUN THIS SCRIPT") --has to be first layer because of loops
 assert(layer.tileset, "NON-VALID FORMAT (not tilemap)")
 
 --button handler
-if(data.confirm_btn) then
+if(data.confirm_button) then
 	local tile_len = data.tile_len
 	local filter_color = data.filter_color
 
-	local file, err = io.open("output.h", "a")
-	assert(file, err)
+	local file = GetFileHandle() --will output in the working dir; aseprite/scripts (machine dependent)
 
 	--assertion step end TODO : assert filepath validity, tileset existence.
 	local img = Image(sprite.spec)
@@ -40,7 +39,7 @@ if(data.confirm_btn) then
 	local tiles_h = img.height / tile_len
 
 	--file manipulation here
-	file:write("#ifndef SPRITE_CONF_TEST_H \n #define SPRITE_CONF_TEST_H \n") -- can be changed based on the context. this for tactigachi
+	file:write("#ifndef " .. data.filename .. "\n#define " .. data.filename .. "\n") -- can be changed based on the context. this for tactigachi
 	file:write("#include <cstdint> \n")
 
 	local tileset_size = layer.tileset.grid.tileSize
@@ -85,7 +84,7 @@ end
 
 --assuming global, asserted file handle in 'append mode' named file
 function AppendHeaderTilemap(file, table, p, w, h)
-	file:write("inline uint8_t testSpritePos_" .. p .. "[]={")
+	file:write("inline uint8_t " .. data.filename .. "Pos_" .. p .. "[]={")
 	for i=1, h+1 do
 		for j=1, w+1 do
 			file:write(table[i*w+j] .. ", ")
@@ -96,7 +95,7 @@ function AppendHeaderTilemap(file, table, p, w, h)
 end
 
 function AppendHeaderTileset(file, table, filter_color)
-	file:write("inline uint8_t testSpriteTILESET[]={")
+	file:write("inline uint8_t " .. data.filename .. "Tileset[] ={")
 	for i=0, #table do
 		for j=0,16 do
 			if (table[i*16+j] == {ALPHA_COLOR}) then -- TODO: establish how the pixels are stored, and write method to conver them to rgb 565
@@ -108,3 +107,8 @@ function AppendHeaderTileset(file, table, filter_color)
 	file:write("};")
 end
 
+function GetFileHandle()
+	local file, err = io.open("output.h", "a")
+	assert(file, err)
+	return file
+end
