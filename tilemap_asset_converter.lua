@@ -1,6 +1,45 @@
 --all frames on the layer, each frame gets its own handle
 --ASSUME: all frames have same tile dims: ie frame 1 and frame 5 both are 3x5 tiles
 
+function ReadFrameIndices(f, pc, img)
+	local tileIndices = {}
+
+	for pixel in img:pixels() do
+		local tileIndex = pc.tileI(pixel())
+		table.insert(tileIndices, tileIndex)
+	end
+
+	return tileIndices
+end
+
+function AppendHeaderTilemap(file, table, p, w, h, filename)
+	file:write("inline uint8_t " .. filename .. "Pos_" .. p .. "[]={")
+	for i=0, h do
+		for j=1, w+1 do
+			file:write(table[i*w+j] .. ", ")
+		end
+		file:write("\n")
+	end
+	file:write("};")
+end
+
+function AppendHeaderTileset(file, table, filename)
+	file:write("inline uint8_t " .. filename .. "Tileset[] ={")
+	for i=0, (#table/16) do
+		for j=0,16 do
+			file:write(table[i*16+j] .. ", ")
+		end
+		file:write("\n")
+	end
+	file:write("};")
+end
+
+function GetFileHandle(filename)
+	local file, err = io.open(filename..".h", "a")
+	assert(file, err)
+	return file
+end
+
 local sprite = app.sprite
 local frame = app.frame
 local layer = app.layer
@@ -16,7 +55,7 @@ d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 			visible=d.data.check_sprite
 		}
 	end   }
-	:entry{ id="filename",label="filename", text=sprite.filename }
+	:entry{ id="filename",label="filename", text=layer.name }
 	:button{ id="confirm_button", text="CONFIRM" }
 :show()
 
@@ -30,35 +69,62 @@ assert(layer.tileset, "NON-VALID FORMAT (not tilemap)")
 if(data.confirm_button) then
 	local tile_len = data.tile_len
 	local filter_color = data.filter_color
+	local filename = data.filename
 
 	local file = GetFileHandle() --will output in the working dir; aseprite/scripts (machine dependent)
 
 	--assertion step end TODO : assert filepath validity, tileset existence.
-	local img = Image(sprite.spec)
-	local tiles_w = img.width / tile_len
-	local tiles_h = img.height / tile_len
+	local sprite_img = Image(sprite.spec)
+	local tiles_w = sprite_img.width / tile_len
+	local tiles_h = sprite_img.height / tile_len
 
 	--file manipulation here
 	file:write("#ifndef " .. data.filename .. "\n#define " .. data.filename .. "\n") -- can be changed based on the context. this for tactigachi
 	file:write("#include <cstdint> \n")
 
-	local tileset_size = layer.tileset.grid.tileSize
+	--get the tileset pixels, format as rgb 565
+	local tileset = layer.tileset
+	local size = tileset.grid.tileSize
+
 	local tileset_pixels = {}
 
 	for i=1, tileset_size+1 do
-		local tile_image = layer.tileset:getTile(i)
+		local tile_image = tileset:getTile(i)
 		for it in tile_image:pixels() do
-			table.insert(tileset_pixels, it())
+			local pc = app.pixelColor
+			local pixValue = it() --manipulat this value to become the rgb 565 pixel 
+		
+			if(pc.rgbaA(pixValue)~=(nil or 0)) then
+				table.insert(tileset_pixels, filter_color)
+			else
+				local r = pc.rgbaR(pixValue)
+				local g = pc.rgbaG(pixValue)
+				local b = pc.rgbaB(pixValue)
+				
+				--bit shift and concat
+				g = g>>2
+				local by1 = r & 0b11111000
+				local by2 = b>>3 & 0xF
+				by1 = by1 | (g>>3)
+				by2 = by2 | (g<<2)
+				
+				local byte_565 = (by1 << 8) | by2
+
+				table.insert(tileset_pixes, ("0x"..byte_565))
+			end
 		end
 	end
 
-	AppendHeaderTileset(file, tileset_pixels, filter_color)
+	AppendHeaderTileset(file, tileset_pixels, filename)
 
 	local indices = {}
 	local tilemap_pos = 0 -- 0-based indexing for C++ 
 	while(frame) do
-		indices = ReadFrameIndices(frame)
-		AppendHeaderTilemap(file, indices, tilemap_pos, tiles_w, tiles_h)
+		local pc = app.pixelColor
+		local img = layer:cel(frame).image --!
+
+		indices = ReadFrameIndices(frame, pc, img)
+		AppendHeaderTilemap(file, indices, tilemap_pos, tiles_w, tiles_h, filename)
 
 		frame = frame.next
 		tilemap_pos = tilemap_pos+1
@@ -67,48 +133,3 @@ if(data.confirm_button) then
 	file:write("#endif") -- can be changed based on the context. this for tactigachi
 end
 --EOF
-
-function ReadFrameIndices(f)
-	local tileIndices = {}
-
-	local pc = app.pixelColor
-	local img = layer:cel(f).image --!
-
-	for pixel in img:pixels() do
-		local tileIndex = pc.tileI(pixel())
-		table.insert(tileIndices, tileIndex)
-	end
-
-	return tileIndices
-end
-
---assuming global, asserted file handle in 'append mode' named file
-function AppendHeaderTilemap(file, table, p, w, h)
-	file:write("inline uint8_t " .. data.filename .. "Pos_" .. p .. "[]={")
-	for i=1, h+1 do
-		for j=1, w+1 do
-			file:write(table[i*w+j] .. ", ")
-		end
-		file:write("\n")
-	end
-	file:write("};")
-end
-
-function AppendHeaderTileset(file, table, filter_color)
-	file:write("inline uint8_t " .. data.filename .. "Tileset[] ={")
-	for i=0, #table do
-		for j=0,16 do
-			if (table[i*16+j] == {ALPHA_COLOR}) then -- TODO: establish how the pixels are stored, and write method to conver them to rgb 565
-				file:write(filter_color .. ",")
-			else file:write(table[i*16+j] .. ",") end
-		end
-		file:write("\n")
-	end
-	file:write("};")
-end
-
-function GetFileHandle()
-	local file, err = io.open("output.h", "a")
-	assert(file, err)
-	return file
-end
