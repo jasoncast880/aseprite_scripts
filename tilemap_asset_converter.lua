@@ -84,11 +84,11 @@ if(data.confirm_button) then
 
 	--get the tileset pixels, format as rgb 565
 	local tileset = layer.tileset
-	local size = tileset.grid.tileSize
-
 	local tileset_pixels = {}
 
-	for i=1, size+1 do
+	--tilset pixel extraction loops
+	local i=1
+	while(true) do
 		local tile_image = tileset:getTile(i)
 		for it in tile_image:pixels() do
 			local pc = app.pixelColor
@@ -110,6 +110,9 @@ if(data.confirm_button) then
 				table.insert(tileset_pixels, string.format( "0x%04X", byte_565))
 			end
 		end
+
+		local next_image = tileset:getTile(i+1)
+		if next_image == nil then break end
 	end
 
 	AppendHeaderTileset(file, tileset_pixels, filename)
