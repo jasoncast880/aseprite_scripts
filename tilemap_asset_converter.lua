@@ -26,7 +26,7 @@ end
 function AppendHeaderTileset(file, table, filename)
 	file:write("inline uint8_t " .. filename .. "Tileset[] ={")
 	for i=0, (#table/16) do
-		for j=0,16 do
+		for j=1,(16+1) do
 			file:write(table[i*16+j] .. ", ")
 		end
 		file:write("\n")
@@ -88,7 +88,7 @@ if(data.confirm_button) then
 
 	local tileset_pixels = {}
 
-	for i=1, tileset_size+1 do
+	for i=1, size+1 do
 		local tile_image = tileset:getTile(i)
 		for it in tile_image:pixels() do
 			local pc = app.pixelColor
