@@ -12,22 +12,24 @@ function ReadFrameIndices(f, pc, img)
 	return tileIndices
 end
 
-function AppendHeaderTilemap(file, table, p, w, h, filename)
+function AppendHeaderTilemap(file, tbl, p, w, h, filename)
 	file:write("inline uint8_t " .. filename .. "Pos_" .. p .. "[]={")
-	for i=0, h do
-		for j=1, w+1 do
-			file:write(table[i*w+j] .. ", ")
+	local idx=1
+	for y=1, h do
+		for x=1, w do
+			file:write(tbl[idx] .. ", ")
+			idx = idx + 1
 		end
 		file:write("\n")
 	end
 	file:write("};")
 end
 
-function AppendHeaderTileset(file, table, filename)
+function AppendHeaderTileset(file, tbl, filename)
 	file:write("inline uint8_t " .. filename .. "Tileset[] ={")
-	for i=0, (#table/16) do
+	for i=0, (#tbl/16) do
 		for j=1,(16+1) do
-			file:write(table[i*16+j] .. ", ")
+			file:write(tbl[i*16+j] .. ", ")
 		end
 		file:write("\n")
 	end
@@ -94,7 +96,7 @@ if(data.confirm_button) then
 			local pc = app.pixelColor
 			local pixValue = it() --manipulat this value to become the rgb 565 pixel 
 		
-			if(pc.rgbaA(pixValue)==(nil or 0)) then
+			if(pc.rgbaA(pixValue)==(0)) then
 				table.insert(tileset_pixels, filter_color)
 			else
 				local r = pc.rgbaR(pixValue)
@@ -103,7 +105,7 @@ if(data.confirm_button) then
 				
 				--bit shift and concat
 				local r5 = r>>3
-				local g6 = g>>2 
+				local g6 = g>>2
 				local b5 = b>>3
 				local byte_565 = (r5<<11) | (g6<<5) | b5
 
@@ -132,4 +134,3 @@ if(data.confirm_button) then
 
 	file:write("#endif") -- can be changed based on the context. this for tactigachi
 end
---EOF
