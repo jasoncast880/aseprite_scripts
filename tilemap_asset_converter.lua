@@ -143,7 +143,7 @@ if(data.confirm_button) then
 		indices_count = indices_count+#indices
 	end
 
-	print(string.format("Tilemaps Completed \n TOTAL INDICES: %d \n TOTAL FRAMES: %d", indices_count, frame_count)
+	print(string.format("Tilemaps Completed \n TOTAL INDICES: %d \n TOTAL FRAMES: %d", indices_count, frame_count))
 
 	file:write("\n#endif") -- can be changed based on the context. this for tactigachi
 end
