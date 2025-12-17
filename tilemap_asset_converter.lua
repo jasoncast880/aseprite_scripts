@@ -6,11 +6,10 @@ function ReadFrameIndices(pc, img)
 
 	for pixel in img:pixels() do
 		local tileIndex = pc.tileI(pixel())
-		print(string.format("%d, ", pixel()))
+		--print(string.format("%d, ", pixel())) 
 		table.insert(tileIndices, tileIndex)
 	end
-		print("")
-
+	print(#tileIndices)
 	return tileIndices
 end
 
