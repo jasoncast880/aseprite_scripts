@@ -90,12 +90,11 @@ if(data.confirm_button) then
 	--get the tileset pixels, format as rgb 565
 	local tileset = layer.tileset
 	local tileset_pixels = {}
-	local num_tiles = num_frames * tiles_w * tiles_h
 
-	--tilset pixel extraction loops
-	for i=0, num_tiles-1 do --HOW TO GET NUM TILES
-		local tile_image = tileset:getTile(i) -- @@@ problems staart here !!!
-		assert( tile_image, string.format("Missing tile %d\n",i) )
+	local counter = 0
+	while tileset:getTile(counter) do
+		local tile_image = tileset:getTile(counter) -- @@@ problems staart here !!!
+		assert(tile_image, string.format("Missing tile %d\n",counter))
 		local pc = app.pixelColor
 
 		for it in tile_image:pixels() do
@@ -116,10 +115,11 @@ if(data.confirm_button) then
 				table.insert(tileset_pixels, string.format( "0x%04X", byte_565))
 			end
 		end
+		counter = counter+1
 	end
 
 	AppendTileset(file, tileset_pixels, filename)
-	print(string.format("Tileset Completed \n TOTAL PIXELS: %d \n TOTAL TILES: %d \n TOTAL DATA: ~%d(by) ", #tileset_pixels, num_tiles, (#tileset_pixels*2)))
+	print(string.format("Tileset Completed \n TOTAL PIXELS: %d \n TOTAL TILES: %d \n TOTAL DATA: ~%d(by) ", #tileset_pixels, counter, (#tileset_pixels*2)))
 	--tileset portion finished
 
 	local indices = {}
