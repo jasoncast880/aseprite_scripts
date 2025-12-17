@@ -118,7 +118,7 @@ if(data.confirm_button) then
 	end
 
 	AppendTileset(file, tileset_pixels, filename)
-	print(string.format("Tileset Completed \n TOTAL PIXELS: %d \n TOTAL TILES: %d \n TOTAL DATA: ~%d(by) ", #tileset_pixels, num_tiles, (#tileset_pixels*2))
+	print(string.format("Tileset Completed \n TOTAL PIXELS: %d \n TOTAL TILES: %d \n TOTAL DATA: ~%d(by) ", #tileset_pixels, num_tiles, (#tileset_pixels*2)))
 	--tileset portion finished
 
 	local indices = {}
