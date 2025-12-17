@@ -27,8 +27,9 @@ end
 
 function AppendTileset(file, tbl, filename)
 	file:write("inline uint8_t " .. filename .. "Tileset[] ={")
-	for i=0, (#tbl/16) do
-		for j=1,(16+1) do
+
+	for i=0, (#tbl/16)-1 do
+		for j=1,(16) do
 			file:write(tbl[i*16+j] .. ", ")
 		end
 		file:write("\n")
