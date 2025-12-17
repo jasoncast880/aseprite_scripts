@@ -127,6 +127,8 @@ if(data.confirm_button) then
 	--tileset portion finished
 
 	local indices = {}
+	local frame_count = 0
+	local indices_count = 0
 	while(frame) do
 		local pc = app.pixelColor
 		local img = layer:cel(frame).image
@@ -137,7 +139,11 @@ if(data.confirm_button) then
 		AppendTilemap(file, indices, frame.frameNumber, tiles_w, tiles_h, filename)
 
 		frame = frame.next
+		frame_count = frame_count+1
+		indices_count = indices_count+#indices
 	end
+
+	print(string.format("Tilemaps Completed \n TOTAL INDICES: %d \n TOTAL FRAMES: %d", indices_count, frame_count)
 
 	file:write("\n#endif") -- can be changed based on the context. this for tactigachi
 end
