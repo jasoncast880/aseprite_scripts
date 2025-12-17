@@ -6,8 +6,10 @@ function ReadFrameIndices(pc, img)
 
 	for pixel in img:pixels() do
 		local tileIndex = pc.tileI(pixel())
+		print(string.format("%d, ", pixel()))
 		table.insert(tileIndices, tileIndex)
 	end
+		print("")
 
 	return tileIndices
 end
@@ -26,7 +28,7 @@ function AppendTilemap(file, tbl, p, w, h, filename)
 		file:write("\n")
 	end
 
-	file:write("};")
+	file:write("};\n")
 end
 
 function AppendTileset(file, tbl, filename)
@@ -38,7 +40,7 @@ function AppendTileset(file, tbl, filename)
 		end
 		file:write("\n")
 	end
-	file:write("};")
+	file:write("};\n")
 end
 
 -- currently will output in some working directory of the aseprite app (tested on windows)
@@ -126,24 +128,21 @@ if(data.confirm_button) then
 	print(string.format("Tileset Completed \n TOTAL PIXELS: %d \n TOTAL TILES: %d \n TOTAL DATA: ~%d(by) ", #tileset_pixels, counter, (#tileset_pixels*2)))
 	--tileset portion finished
 
+	local indices = {}
 	local frame_count = 0
 	local indices_count = 0
 	while(frame) do
 		local pc = app.pixelColor
-
 		local img = layer:cel(frame).image
 		local tiles_w = img.width / tile_len
 		local tiles_h = img.height / tile_len
 
-		local indices = ReadFrameIndices(pc, img)
-		assert(tiles_w*tiles_h~=#indices, string.format("ReadFrameIndices Err; frame #%d",frame.frameNumber))
-
+		indices = ReadFrameIndices(pc, img)
 		AppendTilemap(file, indices, frame.frameNumber, tiles_w, tiles_h, filename)
 
+		frame = frame.next
 		frame_count = frame_count+1
 		indices_count = indices_count+#indices
-
-		frame = frame.next
 	end
 
 	print(string.format("Tilemaps Completed \n TOTAL INDICES: %d \n TOTAL FRAMES: %d", indices_count, frame_count))
