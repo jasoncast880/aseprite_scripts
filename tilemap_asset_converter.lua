@@ -13,7 +13,10 @@ function ReadFrameIndices(pc, img)
 end
 
 function AppendTilemap(file, tbl, p, w, h, filename)
-	file:write("inline uint8_t " .. filename .. "Pos_" .. p .. "[]={")
+	assert(#tbl>=w*h, string.format("Tilemap pos %d, table too small", p))
+
+	file:write("inline uint8_t " .. filename .. "Pos_" .. p .. "[]={\n")
+
 	local idx=1
 	for y=1, h do
 		for x=1, w do
@@ -22,11 +25,12 @@ function AppendTilemap(file, tbl, p, w, h, filename)
 		end
 		file:write("\n")
 	end
+
 	file:write("};")
 end
 
 function AppendTileset(file, tbl, filename)
-	file:write("inline uint8_t " .. filename .. "Tileset[] ={")
+	file:write("inline uint8_t " .. filename .. "Tileset[] ={\n")
 
 	for i=0, (#tbl/16)-1 do
 		for j=1,(16) do
@@ -52,7 +56,7 @@ local layer = app.layer
 local d = Dialog("Convert Tilemap to Asset File") --SEPERATE FILE for tileset layer
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 	--:number{ id="num_frames", label="# of Frames", text="1" }
-	:entry{ id="filter_color",label="Filter Color", text="0x6767", visible=false }
+	:entry{ id="filter_color",label="Filter Color", text="0x6767", visible=true }
 	:check{ id="check_sprite", label="Sprite Mode", selected=true,
 	onclick=function()
 		d:modify{
@@ -82,8 +86,6 @@ if(data.confirm_button) then
 
 	--assertion step end TODO : assert filepath validity, tileset existence.
 	local sprite_img = Image(sprite.spec)
-	local tiles_w = sprite_img.width / tile_len
-	local tiles_h = sprite_img.height / tile_len
 
 	--file manipulation here
 	file:write("#ifndef " .. data.filename .. "\n#define " .. data.filename .. "\n") -- can be changed based on the context.
@@ -95,7 +97,7 @@ if(data.confirm_button) then
 
 	local counter = 0
 	while tileset:getTile(counter) do
-		local tile_image = tileset:getTile(counter) -- @@@ problems staart here !!!
+		local tile_image = tileset:getTile(counter) 
 		assert(tile_image, string.format("Missing tile %d\n",counter))
 		local pc = app.pixelColor
 
@@ -127,7 +129,9 @@ if(data.confirm_button) then
 	local indices = {}
 	while(frame) do
 		local pc = app.pixelColor
-		local img = layer:cel(frame).image --!
+		local img = layer:cel(frame).image
+		local tiles_w = img.width / tile_len
+		local tiles_h = img.height / tile_len
 
 		indices = ReadFrameIndices(pc, img)
 		AppendTilemap(file, indices, frame.frameNumber, tiles_w, tiles_h, filename)
