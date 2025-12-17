@@ -51,9 +51,9 @@ local layer = app.layer
 --form/fe construct
 local d = Dialog("Convert Tilemap to Asset File") --SEPERATE FILE for tileset layer
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
-	:number{ id="num_frames", label="# of Frames", text="1" }
+	--:number{ id="num_frames", label="# of Frames", text="1" }
 	:entry{ id="filter_color",label="Filter Color", text="0x6767", visible=false }
-	:check{ id="check_sprite", label="Sprite Mode", selected=false,
+	:check{ id="check_sprite", label="Sprite Mode", selected=true,
 	onclick=function()
 		d:modify{
 			id="filter_color",
@@ -67,13 +67,14 @@ d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 --globs and assertions
 local data = d.data
 
-assert((frame.frameNumber == 1 ), "GO TO THE FIRST FRAME TO RUN THIS SCRIPT") --has to be first layer because of loops
+--assert((frame.frameNumber == 1 ), "GO TO THE FIRST FRAME TO RUN THIS SCRIPT") --has to be first layer because of loops
+app.command.GoToFirstFrame()
 assert(layer.tileset, "NON-VALID FORMAT (not tilemap)")
 
 --button handler
 if(data.confirm_button) then
 	local tile_len = data.tile_len
-	local num_frames = data.num_frames
+	--local num_frames = data.num_frames
 	local filter_color = data.filter_color
 	local filename = data.filename
 
