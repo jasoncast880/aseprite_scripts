@@ -97,7 +97,9 @@ if(data.confirm_button) then
 		local tile_image = tileset:getTile(i) -- @@@ problems staart here !!!
 		local pc = app.pixelColor
 
+		print("1")
 		for it in tile_image:pixels() do
+			print("2")
 			local pixValue = it() --manipulate this value to become the rgb 565 pixel 
 			if(pc.rgbaA(pixValue)==(0)) then
 				table.insert(tileset_pixels, filter_color)
@@ -112,6 +114,7 @@ if(data.confirm_button) then
 				local b5 = b>>3
 				local byte_565 = (r5<<11) | (g6<<5) | b5
 
+				print("3")
 				table.insert(tileset_pixels, string.format( "0x%04X", byte_565))
 			end
 		end
