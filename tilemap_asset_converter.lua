@@ -94,7 +94,7 @@ if(data.confirm_button) then
 
 	--tilset pixel extraction loops
 	for i=0, num_tiles do --HOW TO GET NUM TILES
-		local tile_image = tileset:getTile(i).image -- @@@ problems staart here !!!
+		local tile_image = tileset:getTile(i) -- @@@ problems staart here !!!
 		local pc = app.pixelColor
 
 		for it in tile_image:pixels() do
