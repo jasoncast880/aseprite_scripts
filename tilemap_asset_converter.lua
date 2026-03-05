@@ -16,7 +16,7 @@ end
 function AppendTilemap(file, tbl, p, w, h, filename)
 	assert(#tbl>=w*h, string.format("Tilemap pos %d, table too small", p))
 
-	file:write("inline uint8_t " .. filename .. "Pos_" .. p .. "[]={\n")
+	file:write("const uint8_t " .. filename .. "Pos_" .. p .. "[]={\n")
 
 	local idx=1
 	for y=1, h do
@@ -31,7 +31,7 @@ function AppendTilemap(file, tbl, p, w, h, filename)
 end
 
 function AppendTileset(file, tbl, filename)
-	file:write("inline uint8_t " .. filename .. "Tileset[] ={\n")
+	file:write("const uint8_t " .. filename .. "Tileset[] ={\n")
 
 	for i=0, (#tbl/16)-1 do
 		for j=1,(16) do
@@ -54,7 +54,7 @@ local frame = app.frame
 local layer = app.layer
 
 --form/fe construct
-local d = Dialog("Convert Tilemap to Asset File") --SEPERATE FILE for tileset layer
+local d = Dialog("Convert Tilemap to Asset File") 
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 	--:number{ id="num_frames", label="# of Frames", text="1" }
 	:entry{ id="filter_color",label="Filter Color", text="0x6767", visible=true }
@@ -98,7 +98,7 @@ if(data.confirm_button) then
 
 	local counter = 0
 	while tileset:getTile(counter) do
-		local tile_image = tileset:getTile(counter) 
+		local tile_image = tileset:getTile(counter)
 		assert(tile_image, string.format("Missing tile %d\n",counter))
 		local pc = app.pixelColor
 
@@ -110,7 +110,7 @@ if(data.confirm_button) then
 				local r = pc.rgbaR(pixValue)
 				local g = pc.rgbaG(pixValue)
 				local b = pc.rgbaB(pixValue)
-				
+
 				--bit shift and concat
 				local r5 = r>>3
 				local g6 = g>>2
