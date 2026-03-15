@@ -5,7 +5,7 @@ function ReadFrameIndices(pc, img)
 	local tileIndices = {}
 
 	for it in img:pixels() do
-		local tileIndex = pc.pixelColor.tileI(it.value)
+		local tileIndex = app.pixelColor.tileI(it.value)
 		table.insert(tileIndices, tileIndex)
 	end
 
