@@ -134,8 +134,8 @@ if(data.confirm_button) then
 	while(frame) do
 		local pc = app.pixelColor
 		local img = layer:cel(frame).image
-		local tiles_w = img.width / tile_len
-		local tiles_h = img.height / tile_len
+		local tiles_w = img.width
+		local tiles_h = img.height
 
 		indices = ReadFrameIndices(pc, img)
 
