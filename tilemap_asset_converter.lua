@@ -4,11 +4,11 @@
 function ReadFrameIndices(pc, img)
 	local tileIndices = {}
 
-	for pixel in img:pixels() do
-		local tileIndex = pc.tileI(pixel())
-		--print(string.format("%d, ", pixel())) 
+	for it in img:pixels() do
+		local tileIndex = pc.tileI(it.value)
 		table.insert(tileIndices, tileIndex)
 	end
+
 	print(#tileIndices)
 	return tileIndices
 end
@@ -57,7 +57,7 @@ local layer = app.layer
 local d = Dialog("Convert Tilemap to Asset File") 
 d:number{ id="tile_len", label="Tile Size", text="16", focus=true, }
 	--:number{ id="num_frames", label="# of Frames", text="1" }
-	:entry{ id="filter_color",label="Filter Color", text="0x6767", visible=true }
+	:entry{ id="filter_color",label="Filter Color", text="0xF81F", visible=true }
 	:check{ id="check_sprite", label="Sprite Mode", selected=true,
 	onclick=function()
 		d:modify{
@@ -84,6 +84,7 @@ if(data.confirm_button) then
 	local filename = data.filename
 
 	local file = GetFileHandle(filename) --will output in the working dir; aseprite/scripts (machine dependent)
+    -- OR C:\Program Files (x86)\Steam\steamapps\common\Aseprite
 
 	--assertion step end TODO : assert filepath validity, tileset existence.
 	local sprite_img = Image(sprite.spec)
@@ -137,6 +138,12 @@ if(data.confirm_button) then
 		local tiles_h = img.height / tile_len
 
 		indices = ReadFrameIndices(pc, img)
+
+        -- temp debug
+        for index, value in ipairs(indices) do 
+            print(" Index: " .. index .. " Value: " .. value)
+        end
+
 		AppendTilemap(file, indices, frame.frameNumber, tiles_w, tiles_h, filename)
 
 		frame = frame.next
